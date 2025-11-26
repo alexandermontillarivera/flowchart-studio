@@ -32,6 +32,7 @@ export function FlowchartNode({ node, zoom, isViewMode = false }: FlowchartNodeP
     startConnecting,
     stopConnecting,
     addConnection,
+    saveToHistory,
   } = useFlowchartStore()
 
   const isSelected = selectedNodeId === node.id
@@ -53,6 +54,7 @@ export function FlowchartNode({ node, zoom, isViewMode = false }: FlowchartNodeP
 
       e.stopPropagation()
       selectNode(node.id)
+      saveToHistory()
       setIsDraggingNode(true)
       setDragging(true)
 
@@ -63,7 +65,7 @@ export function FlowchartNode({ node, zoom, isViewMode = false }: FlowchartNodeP
         nodeY: node.position.y,
       }
     },
-    [node.id, node.position, selectNode, setDragging, isViewMode]
+    [node.id, node.position, selectNode, setDragging, isViewMode, saveToHistory]
   )
 
   const handleResizeMouseDown = useCallback(
@@ -71,6 +73,7 @@ export function FlowchartNode({ node, zoom, isViewMode = false }: FlowchartNodeP
       if (isViewMode) return
       e.stopPropagation()
       e.preventDefault()
+      saveToHistory()
       setIsResizing(true)
       setResizeHandle(handle)
       setDragging(true)
@@ -84,7 +87,7 @@ export function FlowchartNode({ node, zoom, isViewMode = false }: FlowchartNodeP
         nodeY: node.position.y,
       }
     },
-    [node.size, node.position, setDragging, isViewMode]
+    [node.size, node.position, setDragging, isViewMode, saveToHistory]
   )
 
   const handleResizeMouseMove = useCallback(
@@ -180,9 +183,10 @@ export function FlowchartNode({ node, zoom, isViewMode = false }: FlowchartNodeP
 
   const handleDoubleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
+    saveToHistory()
     setIsEditing(true)
     setEditValue(node.label)
-  }, [node.label])
+  }, [node.label, saveToHistory])
 
   const handleBlur = useCallback(() => {
     setIsEditing(false)

@@ -48,7 +48,7 @@ export interface Connection {
   fromAnchor: 'top' | 'right' | 'bottom' | 'left'
   toAnchor: 'top' | 'right' | 'bottom' | 'left'
   label?: string
-  controlPointOffset?: Position
+  waypoints?: Position[]
 }
 
 export interface CanvasState {

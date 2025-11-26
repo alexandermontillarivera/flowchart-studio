@@ -353,41 +353,125 @@ export function FlowchartEditor() {
           const y = node.position.y - minY + padding
           const w = node.size.width
           const h = node.size.height
+          const centerX = x + w / 2
+          const centerY = y + h / 2
+
+          if (node.type === 'connector') {
+            const radius = Math.min(w, h) / 2
+            switch (anchor) {
+              case 'top': return { x: centerX, y: centerY - radius }
+              case 'right': return { x: centerX + radius, y: centerY }
+              case 'bottom': return { x: centerX, y: centerY + radius }
+              case 'left': return { x: centerX - radius, y: centerY }
+              default: return { x: centerX, y: centerY }
+            }
+          }
+
+          if (node.type === 'document' && anchor === 'bottom') {
+            const waveHeight = 15
+            return { x: centerX, y: y + h - waveHeight }
+          }
 
           switch (anchor) {
-            case 'top': return { x: x + w / 2, y }
-            case 'right': return { x: x + w, y: y + h / 2 }
-            case 'bottom': return { x: x + w / 2, y: y + h }
-            case 'left': return { x, y: y + h / 2 }
-            default: return { x: x + w / 2, y: y + h / 2 }
+            case 'top': return { x: centerX, y }
+            case 'right': return { x: x + w, y: centerY }
+            case 'bottom': return { x: centerX, y: y + h }
+            case 'left': return { x, y: centerY }
+            default: return { x: centerX, y: centerY }
           }
         }
 
         const start = getAnchorPos(fromNode, conn.fromAnchor)
         const end = getAnchorPos(toNode, conn.toAnchor)
 
+        const getInitialDirection = (anchor: string) => {
+          switch (anchor) {
+            case 'top': return { x: 0, y: -1 }
+            case 'bottom': return { x: 0, y: 1 }
+            case 'left': return { x: -1, y: 0 }
+            case 'right': return { x: 1, y: 0 }
+            default: return { x: 0, y: 1 }
+          }
+        }
+
+        const calculateOrthogonalPath = () => {
+          if (conn.waypoints && conn.waypoints.length > 0) {
+            const adjustedWaypoints = conn.waypoints.map(wp => ({
+              x: wp.x - minX + padding,
+              y: wp.y - minY + padding
+            }))
+            return [start, ...adjustedWaypoints, end]
+          }
+
+          const startDir = getInitialDirection(conn.fromAnchor)
+          const endDir = getInitialDirection(conn.toAnchor)
+          const points = [start]
+          const isHorizontalStart = startDir.x !== 0
+          const isHorizontalEnd = endDir.x !== 0
+
+          if (isHorizontalStart && isHorizontalEnd) {
+            const midX = (start.x + end.x) / 2
+            points.push({ x: midX, y: start.y })
+            points.push({ x: midX, y: end.y })
+          } else if (!isHorizontalStart && !isHorizontalEnd) {
+            const midY = (start.y + end.y) / 2
+            points.push({ x: start.x, y: midY })
+            points.push({ x: end.x, y: midY })
+          } else if (isHorizontalStart) {
+            points.push({ x: end.x, y: start.y })
+          } else {
+            points.push({ x: start.x, y: end.y })
+          }
+
+          points.push(end)
+          return points
+        }
+
+        const points = calculateOrthogonalPath()
+
         ctx.strokeStyle = '#64748b'
         ctx.lineWidth = 2
         ctx.beginPath()
-        ctx.moveTo(start.x, start.y)
-        ctx.lineTo(end.x, end.y)
+        ctx.moveTo(points[0].x, points[0].y)
+        for (let i = 1; i < points.length; i++) {
+          ctx.lineTo(points[i].x, points[i].y)
+        }
         ctx.stroke()
 
-        const angle = Math.atan2(end.y - start.y, end.x - start.x)
-        const arrowSize = 10
+        // Dibujar flecha al final de la conexión
+        const lastTwo = points.slice(-2)
+        const angle = Math.atan2(lastTwo[1].y - lastTwo[0].y, lastTwo[1].x - lastTwo[0].x)
+        const arrowSize = 12
+        const arrowEnd = lastTwo[1] // Usar el último punto real del path
+
         ctx.fillStyle = '#64748b'
         ctx.beginPath()
-        ctx.moveTo(end.x, end.y)
+        ctx.moveTo(arrowEnd.x, arrowEnd.y)
         ctx.lineTo(
-          end.x - arrowSize * Math.cos(angle - Math.PI / 6),
-          end.y - arrowSize * Math.sin(angle - Math.PI / 6)
+          arrowEnd.x - arrowSize * Math.cos(angle - Math.PI / 6),
+          arrowEnd.y - arrowSize * Math.sin(angle - Math.PI / 6)
         )
         ctx.lineTo(
-          end.x - arrowSize * Math.cos(angle + Math.PI / 6),
-          end.y - arrowSize * Math.sin(angle + Math.PI / 6)
+          arrowEnd.x - arrowSize * Math.cos(angle + Math.PI / 6),
+          arrowEnd.y - arrowSize * Math.sin(angle + Math.PI / 6)
         )
         ctx.closePath()
         ctx.fill()
+
+        if (conn.label && points.length >= 2) {
+          const midIndex = Math.min(Math.floor(points.length / 2), points.length - 1)
+          const prevIndex = Math.max(0, midIndex - 1)
+          const midX = (points[prevIndex].x + points[midIndex].x) / 2
+          const midY = (points[prevIndex].y + points[midIndex].y) / 2
+          ctx.fillStyle = '#ffffff'
+          ctx.font = '12px Inter, sans-serif'
+          const labelWidth = ctx.measureText(conn.label).width + 8
+          ctx.fillRect(midX - labelWidth / 2, midY - 10, labelWidth, 18)
+          ctx.fillStyle = '#1e293b'
+          ctx.textAlign = 'center'
+          ctx.textBaseline = 'middle'
+          ctx.fillText(conn.label, midX, midY)
+        }
       })
 
       const imgData = tempCanvas.toDataURL('image/png')

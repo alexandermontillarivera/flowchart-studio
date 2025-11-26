@@ -1,0 +1,46 @@
+{
+  "name": "custom-editor-diagram-flows",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.1",
+    "@fluentui/react-icons": "2.0.315",
+    "@mlc-ai/web-llm": "0.2.80",
+    "@mui/icons-material": "7.3.5",
+    "@mui/material": "7.3.5",
+    "babel-plugin-react-compiler": "1.0.0",
+    "framer-motion": "12.23.24",
+    "html2canvas": "1.4.1",
+    "jspdf": "3.0.4",
+    "next": "16.0.4",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "sonner": "2.0.7",
+    "uuid": "13.0.0",
+    "zustand": "5.0.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4",
+    "@types/node": "20",
+    "@types/react": "19",
+    "@types/react-dom": "19",
+    "@types/uuid": "10.0.0",
+    "eslint": "9",
+    "eslint-config-next": "16.0.4",
+    "next-themes": "0.4.6",
+    "tailwindcss": "4",
+    "typescript": "5"
+  },
+  "description": "This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

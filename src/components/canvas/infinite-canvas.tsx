@@ -204,6 +204,16 @@ export function InfiniteCanvas({ onDrop, canvasRef: externalCanvasRef }: Infinit
         e.preventDefault()
         useFlowchartStore.getState().redo()
       }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+        if (isInputFocused) return
+        e.preventDefault()
+        useFlowchartStore.getState().copySelectedNode()
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+        if (isInputFocused) return
+        e.preventDefault()
+        useFlowchartStore.getState().pasteNode()
+      }
     }
 
     const handleKeyUp = (e: KeyboardEvent) => {

@@ -18,6 +18,7 @@ interface FlowchartStore {
   isConnecting: boolean
   connectingFrom: { nodeId: string; anchor: 'top' | 'right' | 'bottom' | 'left' } | null
   isViewMode: boolean
+  clipboard: FlowNode | null
 
   past: HistoryState[]
   future: HistoryState[]
@@ -51,6 +52,9 @@ interface FlowchartStore {
   exportData: () => string
   importData: (data: string) => boolean
   centerOnContent: (viewportWidth: number, viewportHeight: number) => void
+
+  copySelectedNode: () => void
+  pasteNode: () => void
 
   undo: () => void
   redo: () => void
@@ -97,6 +101,7 @@ export const useFlowchartStore = create<FlowchartStore>()(
       isConnecting: false,
       connectingFrom: null,
       isViewMode: false,
+      clipboard: null,
 
       past: [],
       future: [],
@@ -262,6 +267,37 @@ export const useFlowchartStore = create<FlowchartStore>()(
         const { selectedNodeId, selectedConnectionId, deleteNode, deleteConnection } = get()
         if (selectedNodeId) deleteNode(selectedNodeId)
         if (selectedConnectionId) deleteConnection(selectedConnectionId)
+      },
+
+      copySelectedNode: () => {
+        const { selectedNodeId, nodes } = get()
+        if (!selectedNodeId) return
+
+        const node = nodes.find((n) => n.id === selectedNodeId)
+        if (node) {
+          set({ clipboard: JSON.parse(JSON.stringify(node)) })
+        }
+      },
+
+      pasteNode: () => {
+        const { clipboard } = get()
+        if (!clipboard) return
+
+        get().saveToHistory()
+        const newNode: FlowNode = {
+          ...JSON.parse(JSON.stringify(clipboard)),
+          id: uuid(),
+          position: {
+            x: clipboard.position.x + 30,
+            y: clipboard.position.y + 30,
+          },
+          connections: [],
+        }
+        set((state) => ({
+          nodes: [...state.nodes, newNode],
+          selectedNodeId: newNode.id,
+          clipboard: { ...clipboard, position: newNode.position },
+        }))
       },
 
       loadFromStorage: () => {},

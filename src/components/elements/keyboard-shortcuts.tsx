@@ -7,6 +7,8 @@ import { Paper, Typography, IconButton, Box, Chip } from '@mui/material'
 import { Keyboard24Regular, Dismiss24Regular } from '@fluentui/react-icons'
 
 const SHORTCUTS = [
+  { keys: ['Ctrl/Cmd', 'C'], action: 'Copiar nodo seleccionado' },
+  { keys: ['Ctrl/Cmd', 'V'], action: 'Pegar nodo' },
   { keys: ['Ctrl/Cmd', 'Z'], action: 'Deshacer' },
   { keys: ['Ctrl/Cmd', 'Y'], action: 'Rehacer' },
   { keys: ['Suprimir', 'Retroceso'], action: 'Eliminar elemento seleccionado' },

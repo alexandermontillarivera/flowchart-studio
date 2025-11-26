@@ -76,31 +76,262 @@ export function FlowchartEditor() {
         ctx.lineWidth = 2
         ctx.fillStyle = '#f8fafc'
 
-        if (node.type === 'start-end') {
+        const drawShape = () => {
           ctx.beginPath()
-          ctx.ellipse(x + w / 2, y + h / 2, w / 2, h / 2, 0, 0, Math.PI * 2)
-          ctx.fill()
-          ctx.stroke()
-        } else if (node.type === 'decision') {
-          ctx.beginPath()
-          ctx.moveTo(x + w / 2, y)
-          ctx.lineTo(x + w, y + h / 2)
-          ctx.lineTo(x + w / 2, y + h)
-          ctx.lineTo(x, y + h / 2)
-          ctx.closePath()
-          ctx.fill()
-          ctx.stroke()
-        } else if (node.type === 'connector') {
-          ctx.beginPath()
-          ctx.arc(x + w / 2, y + h / 2, Math.min(w, h) / 2, 0, Math.PI * 2)
-          ctx.fill()
-          ctx.stroke()
-        } else {
-          ctx.beginPath()
-          ctx.roundRect(x, y, w, h, 8)
-          ctx.fill()
-          ctx.stroke()
+          switch (node.type) {
+            case 'start-end':
+              ctx.ellipse(x + w / 2, y + h / 2, w / 2, h / 2, 0, 0, Math.PI * 2)
+              ctx.fill()
+              ctx.stroke()
+              break
+
+            case 'decision':
+              ctx.moveTo(x + w / 2, y)
+              ctx.lineTo(x + w, y + h / 2)
+              ctx.lineTo(x + w / 2, y + h)
+              ctx.lineTo(x, y + h / 2)
+              ctx.closePath()
+              ctx.fill()
+              ctx.stroke()
+              break
+
+            case 'connector':
+              ctx.arc(x + w / 2, y + h / 2, Math.min(w, h) / 2, 0, Math.PI * 2)
+              ctx.fill()
+              ctx.stroke()
+              break
+
+            case 'data': {
+              const skew = 20
+              ctx.moveTo(x + skew, y)
+              ctx.lineTo(x + w, y)
+              ctx.lineTo(x + w - skew, y + h)
+              ctx.lineTo(x, y + h)
+              ctx.closePath()
+              ctx.fill()
+              ctx.stroke()
+              break
+            }
+
+            case 'document': {
+              const waveHeight = 15
+              ctx.moveTo(x, y)
+              ctx.lineTo(x + w, y)
+              ctx.lineTo(x + w, y + h - waveHeight)
+              ctx.quadraticCurveTo(x + w * 0.75, y + h, x + w / 2, y + h - waveHeight)
+              ctx.quadraticCurveTo(x + w * 0.25, y + h - waveHeight * 2, x, y + h - waveHeight)
+              ctx.closePath()
+              ctx.fill()
+              ctx.stroke()
+              break
+            }
+
+            case 'predefined-process': {
+              const sideMargin = 15
+              ctx.roundRect(x, y, w, h, 4)
+              ctx.fill()
+              ctx.stroke()
+              ctx.beginPath()
+              ctx.moveTo(x + sideMargin, y)
+              ctx.lineTo(x + sideMargin, y + h)
+              ctx.moveTo(x + w - sideMargin, y)
+              ctx.lineTo(x + w - sideMargin, y + h)
+              ctx.stroke()
+              break
+            }
+
+            case 'delay':
+              ctx.moveTo(x, y)
+              ctx.lineTo(x + w * 0.7, y)
+              ctx.quadraticCurveTo(x + w, y, x + w, y + h / 2)
+              ctx.quadraticCurveTo(x + w, y + h, x + w * 0.7, y + h)
+              ctx.lineTo(x, y + h)
+              ctx.closePath()
+              ctx.fill()
+              ctx.stroke()
+              break
+
+            case 'manual-input': {
+              const topSlant = 20
+              ctx.moveTo(x, y + topSlant)
+              ctx.lineTo(x + w, y)
+              ctx.lineTo(x + w, y + h)
+              ctx.lineTo(x, y + h)
+              ctx.closePath()
+              ctx.fill()
+              ctx.stroke()
+              break
+            }
+
+            case 'preparation': {
+              const hexOffset = 25
+              ctx.moveTo(x + hexOffset, y)
+              ctx.lineTo(x + w - hexOffset, y)
+              ctx.lineTo(x + w, y + h / 2)
+              ctx.lineTo(x + w - hexOffset, y + h)
+              ctx.lineTo(x + hexOffset, y + h)
+              ctx.lineTo(x, y + h / 2)
+              ctx.closePath()
+              ctx.fill()
+              ctx.stroke()
+              break
+            }
+
+            case 'database': {
+              const ellipseH = 15
+              ctx.moveTo(x, y + ellipseH)
+              ctx.lineTo(x, y + h - ellipseH)
+              ctx.quadraticCurveTo(x, y + h, x + w / 2, y + h)
+              ctx.quadraticCurveTo(x + w, y + h, x + w, y + h - ellipseH)
+              ctx.lineTo(x + w, y + ellipseH)
+              ctx.fill()
+              ctx.stroke()
+              ctx.beginPath()
+              ctx.ellipse(x + w / 2, y + ellipseH, w / 2, ellipseH, 0, 0, Math.PI * 2)
+              ctx.fill()
+              ctx.stroke()
+              break
+            }
+
+            case 'display': {
+              const displayCurve = 30
+              ctx.moveTo(x + displayCurve, y)
+              ctx.lineTo(x + w, y)
+              ctx.lineTo(x + w, y + h)
+              ctx.lineTo(x + displayCurve, y + h)
+              ctx.quadraticCurveTo(x, y + h / 2, x + displayCurve, y)
+              ctx.fill()
+              ctx.stroke()
+              break
+            }
+
+            case 'manual-operation': {
+              const trapOffset = 25
+              ctx.moveTo(x + trapOffset, y)
+              ctx.lineTo(x + w - trapOffset, y)
+              ctx.lineTo(x + w, y + h)
+              ctx.lineTo(x, y + h)
+              ctx.closePath()
+              ctx.fill()
+              ctx.stroke()
+              break
+            }
+
+            case 'loop-limit': {
+              const loopOffset = 15
+              ctx.moveTo(x + loopOffset, y)
+              ctx.lineTo(x + w - loopOffset, y)
+              ctx.lineTo(x + w, y + loopOffset)
+              ctx.lineTo(x + w, y + h)
+              ctx.lineTo(x, y + h)
+              ctx.lineTo(x, y + loopOffset)
+              ctx.closePath()
+              ctx.fill()
+              ctx.stroke()
+              break
+            }
+
+            case 'merge':
+              ctx.moveTo(x, y)
+              ctx.lineTo(x + w, y)
+              ctx.lineTo(x + w / 2, y + h)
+              ctx.closePath()
+              ctx.fill()
+              ctx.stroke()
+              break
+
+            case 'or': {
+              const orR = Math.min(w, h) / 2
+              ctx.arc(x + w / 2, y + h / 2, orR, 0, Math.PI * 2)
+              ctx.fill()
+              ctx.stroke()
+              ctx.beginPath()
+              ctx.moveTo(x + w / 2, y)
+              ctx.lineTo(x + w / 2, y + h)
+              ctx.moveTo(x, y + h / 2)
+              ctx.lineTo(x + w, y + h / 2)
+              ctx.stroke()
+              break
+            }
+
+            case 'summing-junction': {
+              const sjR = Math.min(w, h) / 2
+              const sjOffset = sjR * 0.707
+              ctx.arc(x + w / 2, y + h / 2, sjR, 0, Math.PI * 2)
+              ctx.fill()
+              ctx.stroke()
+              ctx.beginPath()
+              ctx.moveTo(x + w / 2 - sjOffset, y + h / 2 - sjOffset)
+              ctx.lineTo(x + w / 2 + sjOffset, y + h / 2 + sjOffset)
+              ctx.moveTo(x + w / 2 + sjOffset, y + h / 2 - sjOffset)
+              ctx.lineTo(x + w / 2 - sjOffset, y + h / 2 + sjOffset)
+              ctx.stroke()
+              break
+            }
+
+            case 'collate':
+              ctx.moveTo(x, y)
+              ctx.lineTo(x + w, y)
+              ctx.lineTo(x + w / 2, y + h / 2)
+              ctx.closePath()
+              ctx.fill()
+              ctx.stroke()
+              ctx.beginPath()
+              ctx.moveTo(x + w / 2, y + h / 2)
+              ctx.lineTo(x + w, y + h)
+              ctx.lineTo(x, y + h)
+              ctx.closePath()
+              ctx.fill()
+              ctx.stroke()
+              break
+
+            case 'sort':
+              ctx.moveTo(x + w / 2, y)
+              ctx.lineTo(x + w, y + h / 2)
+              ctx.lineTo(x + w / 2, y + h)
+              ctx.lineTo(x, y + h / 2)
+              ctx.closePath()
+              ctx.fill()
+              ctx.stroke()
+              ctx.beginPath()
+              ctx.moveTo(x, y + h / 2)
+              ctx.lineTo(x + w, y + h / 2)
+              ctx.stroke()
+              break
+
+            case 'stored-data': {
+              const sdCurve = 20
+              ctx.moveTo(x + sdCurve, y)
+              ctx.lineTo(x + w, y)
+              ctx.quadraticCurveTo(x + w - sdCurve, y + h / 2, x + w, y + h)
+              ctx.lineTo(x + sdCurve, y + h)
+              ctx.quadraticCurveTo(x, y + h / 2, x + sdCurve, y)
+              ctx.fill()
+              ctx.stroke()
+              break
+            }
+
+            case 'internal-storage': {
+              const isMargin = 15
+              ctx.roundRect(x, y, w, h, 4)
+              ctx.fill()
+              ctx.stroke()
+              ctx.beginPath()
+              ctx.moveTo(x, y + isMargin)
+              ctx.lineTo(x + w, y + isMargin)
+              ctx.moveTo(x + isMargin, y)
+              ctx.lineTo(x + isMargin, y + h)
+              ctx.stroke()
+              break
+            }
+
+            default:
+              ctx.roundRect(x, y, w, h, 8)
+              ctx.fill()
+              ctx.stroke()
+          }
         }
+        drawShape()
 
         if (node.label) {
           ctx.fillStyle = '#1e293b'

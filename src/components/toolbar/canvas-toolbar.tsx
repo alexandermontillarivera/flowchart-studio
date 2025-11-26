@@ -483,7 +483,7 @@ export function CanvasToolbar({ onExportPDF }: CanvasToolbarProps) {
           <Typography variant="body2" color={isDark ? 'grey.400' : 'grey.600'}>
             Tu diagrama se guarda automáticamente en el navegador. También puedes descargarlo como archivo JSON.
           </Typography>
-          <Box className="flex gap-2">
+          <Box className="flex gap-2" sx={{ mt: 2 }}>
             <Button
               fullWidth
               variant="outlined"
@@ -503,6 +503,7 @@ export function CanvasToolbar({ onExportPDF }: CanvasToolbarProps) {
               sx={{
                 textTransform: 'none',
                 background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                color: "#FFF !important"
               }}
             >
               Descargar JSON
@@ -519,7 +520,7 @@ export function CanvasToolbar({ onExportPDF }: CanvasToolbarProps) {
         maxWidth={500}
       >
         <Box className="space-y-4">
-          <Typography variant="body2" color={isDark ? 'grey.400' : 'grey.600'}>
+          <Typography variant="body2" color={isDark ? 'grey.400' : 'grey.600'} mb={2}>
             Selecciona un archivo JSON o pega el contenido del diagrama.
           </Typography>
 
@@ -545,7 +546,7 @@ export function CanvasToolbar({ onExportPDF }: CanvasToolbarProps) {
             Seleccionar Archivo JSON
           </Button>
 
-          <Divider sx={{ borderColor: isDark ? '#334155' : '#e2e8f0' }}>
+          <Divider sx={{ borderColor: isDark ? '#334155' : '#e2e8f0', mt: 2, mb: 2 }}>
             <Typography variant="caption" color={isDark ? 'grey.500' : 'grey.400'}>
               o pega el JSON
             </Typography>
@@ -577,7 +578,7 @@ export function CanvasToolbar({ onExportPDF }: CanvasToolbarProps) {
             }}
           />
 
-          <Box className="flex gap-2">
+          <Box className="flex gap-2" sx={{ mt: 2 }}>
             <Button
               fullWidth
               variant="outlined"
@@ -598,6 +599,7 @@ export function CanvasToolbar({ onExportPDF }: CanvasToolbarProps) {
               sx={{
                 textTransform: 'none',
                 background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                color: "#FFF !important"
               }}
             >
               Importar

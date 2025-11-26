@@ -338,7 +338,16 @@ export function FlowchartEditor() {
           ctx.font = '14px Inter, sans-serif'
           ctx.textAlign = 'center'
           ctx.textBaseline = 'middle'
-          ctx.fillText(node.label, x + w / 2, y + h / 2, w - 16)
+
+          // Soportar saltos de línea
+          const lines = node.label.split('\n')
+          const lineHeight = 18
+          const totalHeight = lines.length * lineHeight
+          const startY = y + h / 2 - totalHeight / 2 + lineHeight / 2
+
+          lines.forEach((line, index) => {
+            ctx.fillText(line, x + w / 2, startY + index * lineHeight, w - 16)
+          })
         }
       })
 

@@ -181,6 +181,17 @@ export function FlowchartNode({ node, zoom, isViewMode = false }: FlowchartNodeP
     }
   }, [isResizing, handleResizeMouseMove, handleResizeMouseUp])
 
+  // Guardar automáticamente cuando se deselecciona el nodo mientras está editando
+  const editValueRef = useRef(editValue)
+  editValueRef.current = editValue
+
+  useEffect(() => {
+    if (!isSelected && isEditing) {
+      setIsEditing(false)
+      updateNode(node.id, { label: editValueRef.current })
+    }
+  }, [isSelected, isEditing, node.id, updateNode])
+
   const handleDoubleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
     saveToHistory()
@@ -195,14 +206,17 @@ export function FlowchartNode({ node, zoom, isViewMode = false }: FlowchartNodeP
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
+      // Ctrl+Enter o Cmd+Enter para guardar
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault()
         handleBlur()
       }
+      // Escape para cancelar
       if (e.key === 'Escape') {
         setIsEditing(false)
         setEditValue(node.label)
       }
+      // Enter normal permite salto de línea (comportamiento por defecto del textarea)
     },
     [handleBlur, node.label]
   )
@@ -294,6 +308,8 @@ export function FlowchartNode({ node, zoom, isViewMode = false }: FlowchartNodeP
               maxWidth: node.size.width - 16,
               maxHeight: node.size.height - 16,
               lineHeight: '1.4',
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word',
             }}
           >
             {node.label}

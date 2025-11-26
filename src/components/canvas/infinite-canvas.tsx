@@ -35,8 +35,11 @@ export function InfiniteCanvas({ onDrop, canvasRef: externalCanvasRef }: Infinit
     isViewMode,
   } = useFlowchartStore()
 
-  const handleWheel = useCallback(
-    (e: React.WheelEvent) => {
+  useEffect(() => {
+    const element = canvasRef.current
+    if (!element) return
+
+    const handleWheel = (e: WheelEvent) => {
       e.preventDefault()
 
       if (e.shiftKey) {
@@ -45,7 +48,7 @@ export function InfiniteCanvas({ onDrop, canvasRef: externalCanvasRef }: Infinit
           y: canvas.pan.y,
         })
       } else {
-        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+        const rect = element.getBoundingClientRect()
         const mouseX = e.clientX - rect.left
         const mouseY = e.clientY - rect.top
 
@@ -61,9 +64,13 @@ export function InfiniteCanvas({ onDrop, canvasRef: externalCanvasRef }: Infinit
         setZoom(newZoom)
         setPan({ x: newPanX, y: newPanY })
       }
-    },
-    [canvas.zoom, canvas.pan, setZoom, setPan]
-  )
+    }
+
+    element.addEventListener('wheel', handleWheel, { passive: false })
+    return () => {
+      element.removeEventListener('wheel', handleWheel)
+    }
+  }, [canvas.zoom, canvas.pan, setZoom, setPan, canvasRef])
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -250,7 +257,6 @@ export function InfiniteCanvas({ onDrop, canvasRef: externalCanvasRef }: Infinit
         backgroundColor: isDark ? '#0f172a' : '#f8fafc',
         cursor: getCursor(),
       }}
-      onWheel={handleWheel}
       onMouseDown={handleMouseDown}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
